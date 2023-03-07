@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="MovieCRUD.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MovieCRUD.Views" 
+             xmlns:viewmodels="clr-namespace:MovieCRUD.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
+    <UserControl.Resources>
+        <local:NullToBoolConverter x:Key="NullToBoolConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button MaxWidth="100" Grid.Column="0" Padding="15 5" Content="Return"/>
+            <TextBlock Text="Directors"  Grid.Column="1" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <Button MaxWidth="100" 
+                    Grid.Column="2" 
+                    Padding="15 5" 
+                    Content="+" 
+                    HorizontalAlignment="Right"
+                    CommandParameter="{Binding}"
+                    Command="{Binding AddDirectorCommand}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0 10 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <ListView Grid.Column="0" 
+                      Background="#2C3639" 
+                      BorderThickness="0" 
+                      Foreground="White" 
+                      Padding="5" 
+                      Margin="0 0 10 0"
+                      ItemsSource="{Binding Directors}"
+                      SelectedItem="{Binding SelectedDirector}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border>
+                            <TextBlock Text="{Binding Name}"/>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+
+            <Border Padding="10" Grid.Column="1" Background="#2C3639">
+                <Grid>
+
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Margin" Value="0 30 0 0"/>
+                                <Setter Property="FontSize" Value="20"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedDirector, Converter={StaticResource NullToBoolConverter}}"
+                                             Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+                        </TextBlock.Style>
+                        <TextBlock.Text>Select or add a director!</TextBlock.Text>
+                    </TextBlock>
+
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedDirector, Converter={StaticResource NullToBoolConverter}}"
+                                             Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Name" Grid.Column="0" Grid.Row="0" FontWeight="Bold" Margin="0 10 0 0"/>
+                            <TextBlock Text="{Binding SelectedDirector.Name}" Grid.Column="1" Grid.Row="0" Margin="20 10 0 0"/>
+                            <TextBlock Text="Country" Grid.Column="0" Grid.Row="1" FontWeight="Bold" Margin="0 10 0 0"/>
+                            <TextBlock Text="{Binding SelectedDirector.Nationality}" Grid.Column="1" Grid.Row="1" Margin="20 10 0 0"/>
+                            <TextBlock Text="Year of birth" Grid.Column="0" Grid.Row="2" FontWeight="Bold" Margin="0 10 0 0"/>
+                            <TextBlock Text="{Binding SelectedDirector.YearOfBirth}" Grid.Column="1" Grid.Row="2" Margin="20 10 0 0"/>
+
+                        </Grid>
+                        <Grid Grid.Row="1">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Movies" Grid.Row="0" FontSize="16" FontWeight="Bold" Margin="0 20 0 10"/>
+
+                            <ListView Grid.Row="1" 
+                                  Background="#2C3639" 
+                                  BorderThickness="1" 
+                                  Foreground="White" 
+                                  Padding="5" 
+                                  Margin="0 0 10 0" 
+                                  Width="300" HorizontalAlignment="Left">
+                                <ListViewItem>
+                                    <TextBlock Text="Item 1"/>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <TextBlock Text="Item 2"/>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <TextBlock Text="Item 3"/>
+                                </ListViewItem>
+                            </ListView>
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" 
+                                Grid.Row="2" 
+                                Margin="0 20 0 0" 
+                                HorizontalAlignment="Right">
+                            <Button Content="Update" 
+                                Padding="15 5"
+                                CommandParameter="{Binding}" 
+                                Command="{Binding UpdateDirectorCommand}" />
+                            <Button Content="Delete" 
+                                CommandParameter="{Binding}" 
+                                Command="{Binding DeleteDirectorCommand}" 
+                                Margin="5 0 0 0" 
+                                Padding="15 5"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
