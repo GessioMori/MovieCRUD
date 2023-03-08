@@ -20,9 +20,13 @@ namespace MovieCRUD.ViewModels
         private Director? _selectedDirector;
 
         private Movie? _selectedMovie;
-        public ICommand? DeleteDirectorCommand { get; private set; }
-        public ICommand? AddDirectorCommand { get; private set; }
-        public ICommand? UpdateDirectorCommand { get; private set; }
+        public ICommand DeleteDirectorCommand { get; private set; }
+        public ICommand AddDirectorCommand { get; private set; }
+        public ICommand UpdateDirectorCommand { get; private set; }
+        public ICommand AddMovieCommand { get; private set; }
+        public ICommand UpdateMovieCommand { get; private set; }
+        public ICommand DeleteMovieCommand { get; private set; }
+
 
         public Director? SelectedDirector
         {
@@ -52,11 +56,11 @@ namespace MovieCRUD.ViewModels
                 Name = "David Fincher",
                 Nationality = "US",
                 YearOfBirth = 1962,
-                Movies = new List<Movie> {
+                Movies = new ObservableCollection<Movie> {
                     new Movie() {
                         Title = "Seven",
-                        DateOfRelease = new DateOnly(1995, 12, 1),
-                        MovieGenre = Movie.Genre.Drama}
+                        DateOfRelease = new DateTime(1995, 12, 1),
+                        MovieGenre = Genre.Drama}
                 }
             });
             Directors.Add(new Director()
@@ -64,6 +68,7 @@ namespace MovieCRUD.ViewModels
                 Name = "Christopher Nolan",
                 Nationality = "UK",
                 YearOfBirth = 1970,
+                Movies = new ObservableCollection<Movie> { }
             });
 
             StartCommands();
@@ -74,7 +79,10 @@ namespace MovieCRUD.ViewModels
             AddDirectorCommand = new RelayCommand(
                 (object _) =>
                 {
-                    Director newDirector = new();
+                    Director newDirector = new()
+                    {
+                        Movies = new ObservableCollection<Movie> { }
+                    };
 
                     AddDirectorWindow addDirectorWindow = new AddDirectorWindow
                     {
@@ -121,6 +129,61 @@ namespace MovieCRUD.ViewModels
                 (object _) =>
                 {
                     return SelectedDirector != null;
+                });
+            AddMovieCommand = new RelayCommand(
+                (object _) => {
+                    Movie newMovie = new() { 
+                    Director = _selectedDirector,
+                    DateOfRelease = DateTime.Today
+                    };
+                    AddMovieWindow addMovieWindow = new()
+                    {
+                        DataContext = newMovie
+                    };
+
+                    addMovieWindow.ShowDialog();
+
+                    if (addMovieWindow.DialogResult.HasValue && addMovieWindow.DialogResult.Value)
+                    {
+                        SelectedDirector.Movies.Add(newMovie);
+                        SelectedMovie = newMovie;
+                    }
+                },
+                (object _) =>
+                {
+                    return SelectedDirector != null;
+                });
+            UpdateMovieCommand = new RelayCommand(
+                (object _) =>
+                {
+                    Movie movieToUpdate = (Movie)SelectedMovie.Clone();
+
+                    UpdateMovieWindow updateMovieWindow = new()
+                    {
+                        DataContext = movieToUpdate
+                    };
+
+                    updateMovieWindow.ShowDialog();
+
+                    if (updateMovieWindow.DialogResult.HasValue && updateMovieWindow.DialogResult.Value)
+                    {
+                        CopyProperties.CopyObj(movieToUpdate, SelectedMovie);
+                    }
+
+                },
+                (object _) =>
+                {
+                    return SelectedMovie != null;
+                });
+            DeleteMovieCommand = new RelayCommand(
+                (object _) =>
+                {
+                    SelectedDirector.Movies.Remove(SelectedMovie);
+                    SelectedMovie = SelectedDirector.Movies.FirstOrDefault();
+                },
+                (object _) =>
+                {
+                    return SelectedMovie != null;
                 });
 
         }

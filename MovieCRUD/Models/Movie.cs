@@ -12,22 +12,10 @@ namespace MovieCRUD.Models
     {
 
         private string _title;
-        private DateOnly _dateOfRelease;
-        private Director _director;
+        private DateTime _dateOfRelease;
+        private Director? _director;
         private Genre _genre;
 
-        // Onde colocar?
-        public enum Genre
-        {
-            Action,
-            Comedy,
-            Drama,
-            Fantasy,
-            Horror,
-            Mystery,
-            Romance,
-            Thriller
-        }
         public string Title
         {
             get { return _title; }
@@ -41,24 +29,21 @@ namespace MovieCRUD.Models
             }
         }
 
-        public DateOnly DateOfRelease
+        public DateTime DateOfRelease
         {
             get { return _dateOfRelease; }
             set
             {
-                if (_dateOfRelease != value)
-                {
-                    _dateOfRelease = value;
-                    OnPropertyChanged(nameof(DateOfRelease));
-                }
+                _dateOfRelease = value;
+                OnPropertyChanged(nameof(DateOfRelease));
             }
         }
 
-        public Director Director
+        public Director? Director
 
         {
             get { return _director; }
-            private set { _director = value; }
+            set { _director = value; }
         }
 
 

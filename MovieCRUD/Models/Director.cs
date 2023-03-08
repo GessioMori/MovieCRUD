@@ -1,6 +1,7 @@
 ﻿using MovieCRUD.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
@@ -50,18 +51,15 @@ namespace MovieCRUD.Models
             }
         }
 
-        private List<Movie> _movies;
+        private ObservableCollection<Movie> _movies;
 
-        public List<Movie> Movies
+        public ObservableCollection<Movie> Movies
         {
             get { return _movies; }
             set
             {
-                if (_movies != value)
-                {
-                    _movies = value;
-                    OnPropertyChanged(nameof(Movies));
-                }
+                _movies = value;
+                OnPropertyChanged(nameof(Movies));
             }
         }
 
