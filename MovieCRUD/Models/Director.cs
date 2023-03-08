@@ -50,6 +50,21 @@ namespace MovieCRUD.Models
             }
         }
 
+        private List<Movie> _movies;
+
+        public List<Movie> Movies
+        {
+            get { return _movies; }
+            set
+            {
+                if (_movies != value)
+                {
+                    _movies = value;
+                    OnPropertyChanged(nameof(Movies));
+                }
+            }
+        }
+
         public object Clone()
         {
             return this.MemberwiseClone();

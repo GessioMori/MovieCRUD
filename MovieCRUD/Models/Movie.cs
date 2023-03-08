@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace MovieCRUD.Models
 {
@@ -14,8 +15,7 @@ namespace MovieCRUD.Models
         private DateOnly _dateOfRelease;
         private Director _director;
         private Genre _genre;
-        private string? _imdbUrl;
-       
+
         // Onde colocar?
         public enum Genre
         {
@@ -28,15 +28,52 @@ namespace MovieCRUD.Models
             Romance,
             Thriller
         }
-        public string Title { get; set; }
+        public string Title
+        {
+            get { return _title; }
+            set
+            {
+                if (_title != value)
+                {
+                    _title = value;
+                    OnPropertyChanged(nameof(Title));
+                }
+            }
+        }
 
-        public DateOnly DateOfRelease { get; set; }
+        public DateOnly DateOfRelease
+        {
+            get { return _dateOfRelease; }
+            set
+            {
+                if (_dateOfRelease != value)
+                {
+                    _dateOfRelease = value;
+                    OnPropertyChanged(nameof(DateOfRelease));
+                }
+            }
+        }
 
-        public Director Director { get; set; }
+        public Director Director
 
-        public Genre MovieGenre { get; set; }
+        {
+            get { return _director; }
+            private set { _director = value; }
+        }
 
-        public string? ImdbUrl { get; set; }
+
+        public Genre MovieGenre
+        {
+            get { return _genre; }
+            set
+            {
+                if (_genre != value)
+                {
+                    _genre = value;
+                    OnPropertyChanged(nameof(MovieGenre));
+                }
+            }
+        }
 
         public object Clone()
         {

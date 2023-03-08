@@ -19,6 +19,7 @@ namespace MovieCRUD.ViewModels
 
         private Director? _selectedDirector;
 
+        private Movie? _selectedMovie;
         public ICommand? DeleteDirectorCommand { get; private set; }
         public ICommand? AddDirectorCommand { get; private set; }
         public ICommand? UpdateDirectorCommand { get; private set; }
@@ -33,21 +34,38 @@ namespace MovieCRUD.ViewModels
             }
         }
 
+        public Movie? SelectedMovie
+        {
+            get { return _selectedMovie; }
+            set
+            {
+                _selectedMovie = value;
+                OnPropertyChanged(nameof(SelectedMovie));
+            }
+        }
+
         public MainViewModel()
         {
-            Directors = new ObservableCollection<Director>();
+            Directors = new ObservableCollection<Director> { };
             Directors.Add(new Director()
             {
                 Name = "David Fincher",
                 Nationality = "US",
-                YearOfBirth = 1962
+                YearOfBirth = 1962,
+                Movies = new List<Movie> {
+                    new Movie() {
+                        Title = "Seven",
+                        DateOfRelease = new DateOnly(1995, 12, 1),
+                        MovieGenre = Movie.Genre.Drama}
+                }
             });
             Directors.Add(new Director()
             {
                 Name = "Christopher Nolan",
                 Nationality = "UK",
-                YearOfBirth = 1970
+                YearOfBirth = 1970,
             });
+
             StartCommands();
         }
 
@@ -55,22 +73,22 @@ namespace MovieCRUD.ViewModels
         {
             AddDirectorCommand = new RelayCommand(
                 (object _) =>
-            {
-                Director newDirector = new();
-
-                var addDirectorWindow = new AddDirectorWindow
                 {
-                    DataContext = newDirector
-                };
+                    Director newDirector = new();
 
-                addDirectorWindow.ShowDialog();
+                    AddDirectorWindow addDirectorWindow = new AddDirectorWindow
+                    {
+                        DataContext = newDirector
+                    };
 
-                if (addDirectorWindow.DialogResult.HasValue && addDirectorWindow.DialogResult.Value)
-                {
-                    Directors.Add(newDirector);
-                    SelectedDirector = newDirector;
-                }
-            });
+                    addDirectorWindow.ShowDialog();
+
+                    if (addDirectorWindow.DialogResult.HasValue && addDirectorWindow.DialogResult.Value)
+                    {
+                        Directors.Add(newDirector);
+                        SelectedDirector = newDirector;
+                    }
+                });
 
             UpdateDirectorCommand = new RelayCommand(
                 (object _) =>
@@ -96,14 +114,15 @@ namespace MovieCRUD.ViewModels
                 });
             DeleteDirectorCommand = new RelayCommand(
                 (object _) =>
-            {
-                Directors.Remove(SelectedDirector);
-                SelectedDirector = Directors.FirstOrDefault();
-            },
+                {
+                    Directors.Remove(SelectedDirector);
+                    SelectedDirector = Directors.FirstOrDefault();
+                },
                 (object _) =>
                 {
                     return SelectedDirector != null;
                 });
+
         }
     }
 }

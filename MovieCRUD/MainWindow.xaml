@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:MovieCRUD"
         xmlns:views="clr-namespace:MovieCRUD.Views"
         mc:Ignorable="d"
-        Title="MovieCRUD" Height="450" Width="800"
+        Title="MovieCRUD"
+        WindowState="Maximized"
         Foreground="White">
     <Grid Background="{StaticResource Background}">
         <views:MainView Margin="10"/>
