@@ -1,5 +1,6 @@
 ﻿using MovieCRUD.Models;
-using MovieCRUD.ViewModels.Commands;
+using MovieCRUD.Models.Repositories;
+using MovieCRUD.ViewModels.ViewModelUtils;
 using MovieCRUD.Views.Windows;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,18 @@ namespace MovieCRUD.ViewModels
     internal class MainViewModel : BaseNotifier
 
     {
-        public ObservableCollection<Director> Directors { get; private set; }
+        private MainRepository MainRepository { get; set; }
+        public ObservableCollection<Director> Directors { get; }
 
         private Director? _selectedDirector;
 
         private Movie? _selectedMovie;
-        public ICommand DeleteDirectorCommand { get; private set; }
-        public ICommand AddDirectorCommand { get; private set; }
-        public ICommand UpdateDirectorCommand { get; private set; }
-        public ICommand AddMovieCommand { get; private set; }
-        public ICommand UpdateMovieCommand { get; private set; }
-        public ICommand DeleteMovieCommand { get; private set; }
+        public ICommand DeleteDirector { get; private set; }
+        public ICommand AddDirector { get; private set; }
+        public ICommand UpdateDirector { get; private set; }
+        public ICommand AddMovie { get; private set; }
+        public ICommand UpdateMovie { get; private set; }
+        public ICommand DeleteMovie { get; private set; }
 
 
         public Director? SelectedDirector
@@ -33,7 +35,13 @@ namespace MovieCRUD.ViewModels
             get { return _selectedDirector; }
             set
             {
+                // Fazendo uma requisição toda vez que o diretor selecionado é alterado.
                 _selectedDirector = value;
+                if(value != null)
+                {
+                List<Movie> movies = MainRepository.GetMoviesByDirector(value.Id);
+                _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
+                }
                 OnPropertyChanged(nameof(SelectedDirector));
             }
         }
@@ -50,33 +58,15 @@ namespace MovieCRUD.ViewModels
 
         public MainViewModel()
         {
-            Directors = new ObservableCollection<Director> { };
-            Directors.Add(new Director()
-            {
-                Name = "David Fincher",
-                Nationality = "US",
-                YearOfBirth = 1962,
-                Movies = new ObservableCollection<Movie> {
-                    new Movie() {
-                        Title = "Seven",
-                        DateOfRelease = new DateTime(1995, 12, 1),
-                        MovieGenre = Genre.Drama}
-                }
-            });
-            Directors.Add(new Director()
-            {
-                Name = "Christopher Nolan",
-                Nationality = "UK",
-                YearOfBirth = 1970,
-                Movies = new ObservableCollection<Movie> { }
-            });
+            MainRepository = new MainRepository();
+            Directors = new ObservableCollection<Director>(MainRepository.directorRepository);
 
             StartCommands();
         }
 
         public void StartCommands()
         {
-            AddDirectorCommand = new RelayCommand(
+            AddDirector = new RelayCommand(
                 (object _) =>
                 {
                     Director newDirector = new()
@@ -93,12 +83,13 @@ namespace MovieCRUD.ViewModels
 
                     if (addDirectorWindow.DialogResult.HasValue && addDirectorWindow.DialogResult.Value)
                     {
-                        Directors.Add(newDirector);
-                        SelectedDirector = newDirector;
+                        Director dbAddedDirector = MainRepository.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
+                        Directors.Add(dbAddedDirector);
+                        SelectedDirector = dbAddedDirector;
                     }
                 });
 
-            UpdateDirectorCommand = new RelayCommand(
+            UpdateDirector = new RelayCommand(
                 (object _) =>
                 {
                     Director directorToUpdate = (Director)SelectedDirector.Clone();
@@ -112,7 +103,8 @@ namespace MovieCRUD.ViewModels
 
                     if (updateDirectorWindow.DialogResult.HasValue && updateDirectorWindow.DialogResult.Value)
                     {
-                        CopyProperties.CopyObj(directorToUpdate, SelectedDirector);
+                        SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
+                        MainRepository.UpdateDirector(SelectedDirector);
                     }
 
                 },
@@ -120,9 +112,10 @@ namespace MovieCRUD.ViewModels
                 {
                     return SelectedDirector != null;
                 });
-            DeleteDirectorCommand = new RelayCommand(
+            DeleteDirector = new RelayCommand(
                 (object _) =>
                 {
+                    MainRepository.DeleteDirector(SelectedDirector.Id);
                     Directors.Remove(SelectedDirector);
                     SelectedDirector = Directors.FirstOrDefault();
                 },
@@ -130,10 +123,10 @@ namespace MovieCRUD.ViewModels
                 {
                     return SelectedDirector != null;
                 });
-            AddMovieCommand = new RelayCommand(
+            AddMovie = new RelayCommand(
                 (object _) => {
                     Movie newMovie = new() { 
-                    Director = _selectedDirector,
+                    DirectorId = _selectedDirector.Id,
                     DateOfRelease = DateTime.Today
                     };
                     AddMovieWindow addMovieWindow = new()
@@ -145,15 +138,16 @@ namespace MovieCRUD.ViewModels
 
                     if (addMovieWindow.DialogResult.HasValue && addMovieWindow.DialogResult.Value)
                     {
-                        SelectedDirector.Movies.Add(newMovie);
-                        SelectedMovie = newMovie;
+                        Movie dbAddedMovie = MainRepository.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
+                        SelectedDirector.Movies.Add(dbAddedMovie);
+                        SelectedMovie = dbAddedMovie;
                     }
                 },
                 (object _) =>
                 {
                     return SelectedDirector != null;
                 });
-            UpdateMovieCommand = new RelayCommand(
+            UpdateMovie = new RelayCommand(
                 (object _) =>
                 {
                     Movie movieToUpdate = (Movie)SelectedMovie.Clone();
@@ -167,7 +161,8 @@ namespace MovieCRUD.ViewModels
 
                     if (updateMovieWindow.DialogResult.HasValue && updateMovieWindow.DialogResult.Value)
                     {
-                        CopyProperties.CopyObj(movieToUpdate, SelectedMovie);
+                        SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
+                        MainRepository.UpdateMovie(SelectedMovie);
                     }
 
                 },
@@ -175,9 +170,10 @@ namespace MovieCRUD.ViewModels
                 {
                     return SelectedMovie != null;
                 });
-            DeleteMovieCommand = new RelayCommand(
+            DeleteMovie = new RelayCommand(
                 (object _) =>
                 {
+                    MainRepository.DeleteMovie(SelectedMovie.Id);
                     SelectedDirector.Movies.Remove(SelectedMovie);
                     SelectedMovie = SelectedDirector.Movies.FirstOrDefault();
                 },

@@ -44,7 +44,7 @@
                     Content="+" 
                     HorizontalAlignment="Right"
                     CommandParameter="{Binding}"
-                    Command="{Binding AddDirectorCommand}"/>
+                    Command="{Binding AddDirector}"/>
             </Grid>
 
             <Grid Grid.Row="1" Margin="0 10 0 0">
@@ -142,10 +142,10 @@
                                 <Button Content="Update" 
                                 Padding="15 5"
                                 CommandParameter="{Binding}" 
-                                Command="{Binding UpdateDirectorCommand}" />
+                                Command="{Binding UpdateDirector}" />
                                 <Button Content="Delete" 
                                 CommandParameter="{Binding}" 
-                                Command="{Binding DeleteDirectorCommand}" 
+                                Command="{Binding DeleteDirector}" 
                                 Margin="5 0 0 0" 
                                 Padding="15 5"/>
                             </StackPanel>
@@ -179,7 +179,7 @@
                     Content="+" 
                     HorizontalAlignment="Right"
                     CommandParameter="{Binding}"
-                    Command="{Binding AddMovieCommand}"/>
+                    Command="{Binding AddMovie}"/>
             </Grid>
 
             <Grid Grid.Row="1" Margin="0 10 0 0">
@@ -278,10 +278,10 @@
                                 <Button Content="Update" 
                                 Padding="15 5"
                                 CommandParameter="{Binding}" 
-                                Command="{Binding UpdateMovieCommand}" />
+                                Command="{Binding UpdateMovie}" />
                                 <Button Content="Delete" 
                                 CommandParameter="{Binding}" 
-                                Command="{Binding DeleteMovieCommand}" 
+                                Command="{Binding DeleteMovie}" 
                                 Margin="5 0 0 0" 
                                 Padding="15 5"/>
                             </StackPanel>

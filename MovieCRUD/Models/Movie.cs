@@ -1,4 +1,5 @@
-﻿using MovieCRUD.ViewModels;
+﻿using MovieCRUD.Models.Enums;
+using MovieCRUD.ViewModels.ViewModelUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,19 @@ namespace MovieCRUD.Models
 {
     public class Movie : BaseNotifier, ICloneable
     {
-
+        private int _id;
         private string _title;
         private DateTime _dateOfRelease;
-        private Director? _director;
+        private int _directorId;
         private Genre _genre;
 
+        
+        public int Id
+        {
+            get
+            { return _id; }
+            set { _id = value; }
+        }
         public string Title
         {
             get { return _title; }
@@ -39,11 +47,11 @@ namespace MovieCRUD.Models
             }
         }
 
-        public Director? Director
+        public int DirectorId
 
         {
-            get { return _director; }
-            set { _director = value; }
+            get { return _directorId; }
+            set { _directorId = value; }
         }
 
 
@@ -64,5 +72,14 @@ namespace MovieCRUD.Models
         {
             return this.MemberwiseClone();
         }
+
+        public void CopyFromAnotherMovie(Movie otherMovie)
+        {
+            Title = otherMovie.Title;
+            DateOfRelease = otherMovie.DateOfRelease;
+            MovieGenre = otherMovie.MovieGenre;
+        }
+
+        
     }
 }

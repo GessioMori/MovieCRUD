@@ -1,4 +1,4 @@
-﻿using MovieCRUD.ViewModels;
+﻿using MovieCRUD.ViewModels.ViewModelUtils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,8 +9,16 @@ using System.Threading.Tasks;
 
 namespace MovieCRUD.Models
 {
-    public class Director: BaseNotifier, ICloneable
+    public class Director : BaseNotifier, ICloneable
     {
+        private int _id;
+        public int Id
+        {
+            get
+            { return _id; }
+            set { _id = value; }
+        }
+
         private string _name;
         public string Name
         {
@@ -66,6 +74,13 @@ namespace MovieCRUD.Models
         public object Clone()
         {
             return this.MemberwiseClone();
+        }
+
+        public void CopyFromAnotherDirector(Director otherDirector)
+        {
+            Name = otherDirector.Name;
+            YearOfBirth = otherDirector.YearOfBirth;
+            Nationality = otherDirector.Nationality;
         }
     }
 }

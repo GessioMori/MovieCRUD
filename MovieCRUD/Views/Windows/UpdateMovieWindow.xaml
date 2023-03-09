@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MovieCRUD.Views.Windows" 
-        xmlns:models="clr-namespace:MovieCRUD.Models" 
+        xmlns:models="clr-namespace:MovieCRUD.Models"
+        xmlns:enums="clr-namespace:MovieCRUD.Models.Enums"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         d:DataContext="{d:DesignInstance Type=models:Movie}"
         mc:Ignorable="d"
@@ -17,7 +18,7 @@
                         ObjectType="{x:Type sys:Enum}"
                         x:Key="MovieGenreValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="models:Genre" />
+                <x:Type TypeName="enums:Genre" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>

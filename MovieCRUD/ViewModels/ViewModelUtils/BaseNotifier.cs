@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MovieCRUD.ViewModels
+namespace MovieCRUD.ViewModels.ViewModelUtils
 {
     public class BaseNotifier : INotifyPropertyChanged
     {

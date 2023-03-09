@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace MovieCRUD.ViewModels
+namespace MovieCRUD.ViewModels.ViewModelUtils
 {
     public class RelayCommand : ICommand
     {
@@ -26,12 +26,12 @@ namespace MovieCRUD.ViewModels
 
         public bool CanExecute(object parameter)
         {
-            return this.canExecute == null || this.canExecute(parameter);
+            return canExecute == null || canExecute(parameter);
         }
 
         public void Execute(object parameter)
         {
-            this.execute(parameter);
+            execute(parameter);
         }
     }
 }

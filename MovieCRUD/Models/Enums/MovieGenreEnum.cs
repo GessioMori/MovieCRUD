@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MovieCRUD.Models
+namespace MovieCRUD.Models.Enums
 {
     public enum Genre
     {
