@@ -15,16 +15,16 @@ using System.Windows.Shapes;
 namespace MovieCRUD.Views.Windows
 {
     /// <summary>
-    /// Interaction logic for AddMovieWindow.xaml
+    /// Interaction logic for AddOrUpdateMovieWindow.xaml
     /// </summary>
-    public partial class AddMovieWindow : Window
+    public partial class AddOrUpdateMovieWindow : Window
     {
-        public AddMovieWindow()
+        public AddOrUpdateMovieWindow()
         {
             InitializeComponent();
         }
 
-        private void AddMovieButtonClick(object sender, RoutedEventArgs e)
+        private void ConfirmButtonClick(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
         }

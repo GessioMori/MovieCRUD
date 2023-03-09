@@ -74,7 +74,7 @@ namespace MovieCRUD.ViewModels
                         Movies = new ObservableCollection<Movie> { }
                     };
 
-                    AddDirectorWindow addDirectorWindow = new AddDirectorWindow
+                    AddOrUpdateDirectorWindow addDirectorWindow = new()
                     {
                         DataContext = newDirector
                     };
@@ -94,7 +94,7 @@ namespace MovieCRUD.ViewModels
                 {
                     Director directorToUpdate = (Director)SelectedDirector.Clone();
 
-                    UpdateDirectorWindow updateDirectorWindow = new()
+                    AddOrUpdateDirectorWindow updateDirectorWindow = new()
                     {
                         DataContext = directorToUpdate
                     };
@@ -129,7 +129,7 @@ namespace MovieCRUD.ViewModels
                     DirectorId = _selectedDirector.Id,
                     DateOfRelease = DateTime.Today
                     };
-                    AddMovieWindow addMovieWindow = new()
+                    AddOrUpdateMovieWindow addMovieWindow = new()
                     {
                         DataContext = newMovie
                     };
@@ -152,7 +152,7 @@ namespace MovieCRUD.ViewModels
                 {
                     Movie movieToUpdate = (Movie)SelectedMovie.Clone();
 
-                    UpdateMovieWindow updateMovieWindow = new()
+                    AddOrUpdateMovieWindow updateMovieWindow = new()
                     {
                         DataContext = movieToUpdate
                     };

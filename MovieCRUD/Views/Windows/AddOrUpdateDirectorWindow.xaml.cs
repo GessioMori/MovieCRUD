@@ -15,16 +15,16 @@ using System.Windows.Shapes;
 namespace MovieCRUD.Views.Windows
 {
     /// <summary>
-    /// Interaction logic for UpdateDirectorWindow.xaml
+    /// Interaction logic for AddOrUpdateDirectorWindow.xaml
     /// </summary>
-    public partial class UpdateDirectorWindow : Window
+    public partial class AddOrUpdateDirectorWindow : Window
     {
-        public UpdateDirectorWindow()
+        public AddOrUpdateDirectorWindow()
         {
             InitializeComponent();
         }
 
-        private void UpdateDirectorButtonClick(object sender, RoutedEventArgs e)
+        private void ConfirmButtonClick(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
         }
