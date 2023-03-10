@@ -10,18 +10,16 @@ using MovieCRUD.Models.Enums;
 
 namespace MovieCRUD.Models.Repositories
 {
-    internal class MainRepository
+    internal class PgContext : IDbContext
     {
-        readonly string connectionString = ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
+        private readonly string connectionString = ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
 
-        public List<Director> directorRepository { get; set; }
-
-        public MainRepository()
+        public PgContext()
         {
-            directorRepository = GetDirectors();
+            
         }
 
-        public List<Director> GetDirectors()
+        public override List<Director> GetDirectors()
         {
 
             List<Director> directors = new List<Director>();
@@ -53,7 +51,7 @@ namespace MovieCRUD.Models.Repositories
             };
             return directors;
         }
-        public Director AddDirector(string name, int yearOfBirth, string nationality)
+        public override Director AddDirector(string name, int yearOfBirth, string nationality)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -88,7 +86,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public Movie AddMovie(int directorId, string title, DateTime releaseDate, Genre genre)
+        public override Movie AddMovie(int directorId, string title, DateTime releaseDate, Genre genre)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -125,7 +123,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public void DeleteMovie(int movieId)
+        public override void DeleteMovie(int movieId)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -139,7 +137,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public void UpdateMovie(Movie movieToUpdate)
+        public override void UpdateMovie(Movie movieToUpdate)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -158,7 +156,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public void DeleteDirector(int directorId)
+        public override void DeleteDirector(int directorId)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -172,7 +170,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public void UpdateDirector(Director directorToUpdate)
+        public override void UpdateDirector(Director directorToUpdate)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -191,7 +189,7 @@ namespace MovieCRUD.Models.Repositories
                 }
             }
         }
-        public List<Movie> GetMoviesByDirector(int directorId)
+        public override List<Movie> GetMoviesByDirector(int directorId)
         {
             var movies = new List<Movie>();
 
@@ -224,30 +222,7 @@ namespace MovieCRUD.Models.Repositories
 
             return movies;
         }
-        private static Genre ParseGenre(string genreString)
-        {
-            switch (genreString)
-            {
-                case "Action":
-                    return Genre.Action;
-                case "Comedy":
-                    return Genre.Comedy;
-                case "Drama":
-                    return Genre.Drama;
-                case "Fantasy":
-                    return Genre.Fantasy;
-                case "Horror":
-                    return Genre.Horror;
-                case "Mystery":
-                    return Genre.Mystery;
-                case "Romance":
-                    return Genre.Romance;
-                case "Thriller":
-                    return Genre.Thriller;
-                default:
-                    throw new ArgumentException("Invalid genre string: " + genreString);
-            }
-        }
+        
 
     }
 }

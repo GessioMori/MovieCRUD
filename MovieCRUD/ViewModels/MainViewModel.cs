@@ -16,7 +16,7 @@ namespace MovieCRUD.ViewModels
     internal class MainViewModel : BaseNotifier
 
     {
-        private MainRepository MainRepository { get; set; }
+        private IDbContext DbContext { get; set; }
         public ObservableCollection<Director> Directors { get; }
 
         private Director? _selectedDirector;
@@ -35,11 +35,10 @@ namespace MovieCRUD.ViewModels
             get { return _selectedDirector; }
             set
             {
-                // Fazendo uma requisição toda vez que o diretor selecionado é alterado.
                 _selectedDirector = value;
                 if(value != null)
                 {
-                List<Movie> movies = MainRepository.GetMoviesByDirector(value.Id);
+                List<Movie> movies = DbContext.GetMoviesByDirector(value.Id);
                 _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
                 }
                 OnPropertyChanged(nameof(SelectedDirector));
@@ -56,15 +55,15 @@ namespace MovieCRUD.ViewModels
             }
         }
 
-        public MainViewModel()
+        public MainViewModel(IDbContext dbContext)
         {
-            MainRepository = new MainRepository();
-            Directors = new ObservableCollection<Director>(MainRepository.directorRepository);
+            DbContext = dbContext;
+            Directors = new ObservableCollection<Director>(DbContext.GetDirectors());
 
             StartCommands();
         }
 
-        public void StartCommands()
+        private void StartCommands()
         {
             AddDirector = new RelayCommand(
                 (object _) =>
@@ -83,7 +82,7 @@ namespace MovieCRUD.ViewModels
 
                     if (addDirectorWindow.DialogResult.HasValue && addDirectorWindow.DialogResult.Value)
                     {
-                        Director dbAddedDirector = MainRepository.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
+                        Director dbAddedDirector = DbContext.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
                         Directors.Add(dbAddedDirector);
                         SelectedDirector = dbAddedDirector;
                     }
@@ -104,7 +103,7 @@ namespace MovieCRUD.ViewModels
                     if (updateDirectorWindow.DialogResult.HasValue && updateDirectorWindow.DialogResult.Value)
                     {
                         SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
-                        MainRepository.UpdateDirector(SelectedDirector);
+                        DbContext.UpdateDirector(SelectedDirector);
                     }
 
                 },
@@ -115,7 +114,7 @@ namespace MovieCRUD.ViewModels
             DeleteDirector = new RelayCommand(
                 (object _) =>
                 {
-                    MainRepository.DeleteDirector(SelectedDirector.Id);
+                    DbContext.DeleteDirector(SelectedDirector.Id);
                     Directors.Remove(SelectedDirector);
                     SelectedDirector = Directors.FirstOrDefault();
                 },
@@ -138,7 +137,7 @@ namespace MovieCRUD.ViewModels
 
                     if (addMovieWindow.DialogResult.HasValue && addMovieWindow.DialogResult.Value)
                     {
-                        Movie dbAddedMovie = MainRepository.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
+                        Movie dbAddedMovie = DbContext.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
                         SelectedDirector.Movies.Add(dbAddedMovie);
                         SelectedMovie = dbAddedMovie;
                     }
@@ -162,7 +161,7 @@ namespace MovieCRUD.ViewModels
                     if (updateMovieWindow.DialogResult.HasValue && updateMovieWindow.DialogResult.Value)
                     {
                         SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
-                        MainRepository.UpdateMovie(SelectedMovie);
+                        DbContext.UpdateMovie(SelectedMovie);
                     }
 
                 },
@@ -173,7 +172,7 @@ namespace MovieCRUD.ViewModels
             DeleteMovie = new RelayCommand(
                 (object _) =>
                 {
-                    MainRepository.DeleteMovie(SelectedMovie.Id);
+                    DbContext.DeleteMovie(SelectedMovie.Id);
                     SelectedDirector.Movies.Remove(SelectedMovie);
                     SelectedMovie = SelectedDirector.Movies.FirstOrDefault();
                 },
