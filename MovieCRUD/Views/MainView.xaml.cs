@@ -25,9 +25,9 @@ namespace MovieCRUD.Views
     {
         public MainView()
         {
-            InitializeComponent();
             PgContext pgContext = new();
             DataContext = new MainViewModel(pgContext);
+            InitializeComponent();
         }
     }
     public class NullToBoolConverter : IValueConverter

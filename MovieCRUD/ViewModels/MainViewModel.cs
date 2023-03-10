@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MovieCRUD.ViewModels
@@ -36,10 +37,10 @@ namespace MovieCRUD.ViewModels
             set
             {
                 _selectedDirector = value;
-                if(value != null)
+                if (value != null)
                 {
-                List<Movie> movies = DbContext.GetMoviesByDirector(value.Id);
-                _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
+                    List<Movie> movies = DbContext.GetMoviesByDirector(value.Id);
+                    _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
                 }
                 OnPropertyChanged(nameof(SelectedDirector));
             }
@@ -58,7 +59,15 @@ namespace MovieCRUD.ViewModels
         public MainViewModel(IDbContext dbContext)
         {
             DbContext = dbContext;
-            Directors = new ObservableCollection<Director>(DbContext.GetDirectors());
+
+            try
+            {
+                Directors = new ObservableCollection<Director>(DbContext.GetDirectors());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             StartCommands();
         }
@@ -82,9 +91,17 @@ namespace MovieCRUD.ViewModels
 
                     if (addDirectorWindow.DialogResult.HasValue && addDirectorWindow.DialogResult.Value)
                     {
-                        Director dbAddedDirector = DbContext.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
-                        Directors.Add(dbAddedDirector);
-                        SelectedDirector = dbAddedDirector;
+                        try
+                        {
+                            Director dbAddedDirector = DbContext.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
+                            Directors.Add(dbAddedDirector);
+                            SelectedDirector = dbAddedDirector;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
                     }
                 });
 
@@ -102,8 +119,16 @@ namespace MovieCRUD.ViewModels
 
                     if (updateDirectorWindow.DialogResult.HasValue && updateDirectorWindow.DialogResult.Value)
                     {
-                        SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
-                        DbContext.UpdateDirector(SelectedDirector);
+                        try
+                        {
+                            SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
+                            DbContext.UpdateDirector(SelectedDirector);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
                     }
 
                 },
@@ -114,19 +139,28 @@ namespace MovieCRUD.ViewModels
             DeleteDirector = new RelayCommand(
                 (object _) =>
                 {
-                    DbContext.DeleteDirector(SelectedDirector.Id);
-                    Directors.Remove(SelectedDirector);
-                    SelectedDirector = Directors.FirstOrDefault();
+                    try
+                    {
+                        DbContext.DeleteDirector(SelectedDirector.Id);
+                        Directors.Remove(SelectedDirector);
+                        SelectedDirector = Directors.FirstOrDefault();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 },
                 (object _) =>
                 {
                     return SelectedDirector != null;
                 });
             AddMovie = new RelayCommand(
-                (object _) => {
-                    Movie newMovie = new() { 
-                    DirectorId = _selectedDirector.Id,
-                    DateOfRelease = DateTime.Today
+                (object _) =>
+                {
+                    Movie newMovie = new()
+                    {
+                        DirectorId = _selectedDirector.Id,
+                        DateOfRelease = DateTime.Today
                     };
                     AddOrUpdateMovieWindow addMovieWindow = new()
                     {
@@ -137,9 +171,17 @@ namespace MovieCRUD.ViewModels
 
                     if (addMovieWindow.DialogResult.HasValue && addMovieWindow.DialogResult.Value)
                     {
-                        Movie dbAddedMovie = DbContext.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
-                        SelectedDirector.Movies.Add(dbAddedMovie);
-                        SelectedMovie = dbAddedMovie;
+                        try
+                        {
+                            Movie dbAddedMovie = DbContext.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
+                            SelectedDirector.Movies.Add(dbAddedMovie);
+                            SelectedMovie = dbAddedMovie;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
                     }
                 },
                 (object _) =>
@@ -160,8 +202,16 @@ namespace MovieCRUD.ViewModels
 
                     if (updateMovieWindow.DialogResult.HasValue && updateMovieWindow.DialogResult.Value)
                     {
-                        SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
-                        DbContext.UpdateMovie(SelectedMovie);
+                        try
+                        {
+                            SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
+                            DbContext.UpdateMovie(SelectedMovie);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+
                     }
 
                 },
@@ -172,15 +222,22 @@ namespace MovieCRUD.ViewModels
             DeleteMovie = new RelayCommand(
                 (object _) =>
                 {
-                    DbContext.DeleteMovie(SelectedMovie.Id);
-                    SelectedDirector.Movies.Remove(SelectedMovie);
-                    SelectedMovie = SelectedDirector.Movies.FirstOrDefault();
+                    try
+                    {
+                        DbContext.DeleteMovie(SelectedMovie.Id);
+                        SelectedDirector.Movies.Remove(SelectedMovie);
+                        SelectedMovie = SelectedDirector.Movies.FirstOrDefault();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
                 },
                 (object _) =>
                 {
                     return SelectedMovie != null;
                 });
-
         }
     }
 }

@@ -7,68 +7,79 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using MovieCRUD.Models.Enums;
+using System.Windows;
 
 namespace MovieCRUD.Models.Repositories
 {
     internal class PgContext : IDbContext
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
-
         public PgContext()
         {
-            
         }
 
         public override List<Director> GetDirectors()
         {
-
-            List<Director> directors = new List<Director>();
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new(connectionString))
             {
                 string query = "SELECT * FROM directors";
 
                 using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
                 {
-                    connection.Open();
-                    NpgsqlDataReader reader = command.ExecuteReader();
-
-                    while (reader.Read())
+                    try
                     {
-                        Director director = new Director
-                        {
-                            Id = (int)reader["id"],
-                            Name = (string)reader["name"],
-                            YearOfBirth = (int)reader["year_of_birth"],
-                            Nationality = (string)reader["nationality"]
-                        };
+                        List<Director> directors = new();
 
-                        directors.Add(director);
+                        connection.Open();
+                        NpgsqlDataReader reader = command.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            Director director = new Director
+                            {
+                                Id = (int)reader["id"],
+                                Name = (string)reader["name"],
+                                YearOfBirth = (int)reader["year_of_birth"],
+                                Nationality = (string)reader["nationality"]
+                            };
+
+                            directors.Add(director);
+                        }
+
+                        reader.Close();
+
+                        return directors;
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("It was not possible to get the directors. Error: " + ex.Message);
                     }
 
-                    reader.Close();
                 }
             };
-            return directors;
+
         }
         public override Director AddDirector(string name, int yearOfBirth, string nationality)
         {
-            using (NpgsqlConnection conn = new(connectionString))
+            using (NpgsqlConnection connection = new(connectionString))
             {
-                conn.Open();
-
                 using (NpgsqlCommand cmd = new())
                 {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "INSERT INTO directors (name, year_of_birth, nationality) VALUES (@name, @yearOfBirth, @nationality) RETURNING id";
-                    cmd.Parameters.AddWithValue("name", name);
-                    cmd.Parameters.AddWithValue("yearOfBirth", yearOfBirth);
-                    cmd.Parameters.AddWithValue("nationality", nationality);
-
-                    object? result = cmd.ExecuteScalar();
-
-                    if (result != null && result != DBNull.Value)
+                    try
                     {
+                        connection.Open();
+                        cmd.Connection = connection;
+                        cmd.CommandText = "INSERT INTO directors (name, year_of_birth, nationality) VALUES (@name, @yearOfBirth, @nationality) RETURNING id";
+                        cmd.Parameters.AddWithValue("name", name);
+                        cmd.Parameters.AddWithValue("yearOfBirth", yearOfBirth);
+                        cmd.Parameters.AddWithValue("nationality", nationality);
+
+                        object? result = cmd.ExecuteScalar();
+
                         int newDirectorId = (int)result;
 
                         return new Director
@@ -79,9 +90,17 @@ namespace MovieCRUD.Models.Repositories
                             Nationality = nationality
                         };
                     }
-                    else
+                    catch (InvalidOperationException)
                     {
-                        throw new Exception("Failed to add director.");
+                        throw new Exception("Invalid data.");
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
                     }
                 }
             }
@@ -90,21 +109,20 @@ namespace MovieCRUD.Models.Repositories
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
-                conn.Open();
-
                 using (NpgsqlCommand cmd = new())
                 {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "INSERT INTO movies (title, date_of_release, genre, director_id) VALUES (@title, @releaseDate, @genre, @directorId) RETURNING id";
-                    cmd.Parameters.AddWithValue("title", title);
-                    cmd.Parameters.AddWithValue("releaseDate", releaseDate);
-                    cmd.Parameters.AddWithValue("genre", genre.ToString());
-                    cmd.Parameters.AddWithValue("directorId", directorId);
-
-                    object? result = cmd.ExecuteScalar();
-
-                    if (result != null && result != DBNull.Value)
+                    try
                     {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandText = "INSERT INTO movies (title, date_of_release, genre, director_id) VALUES (@title, @releaseDate, @genre, @directorId) RETURNING id";
+                        cmd.Parameters.AddWithValue("title", title);
+                        cmd.Parameters.AddWithValue("releaseDate", releaseDate);
+                        cmd.Parameters.AddWithValue("genre", genre.ToString());
+                        cmd.Parameters.AddWithValue("directorId", directorId);
+
+                        object? result = cmd.ExecuteScalar();
+
                         int newMovieId = (int)result;
 
                         return new Movie
@@ -116,9 +134,17 @@ namespace MovieCRUD.Models.Repositories
                             Title = title
                         };
                     }
-                    else
+                    catch (InvalidOperationException)
                     {
-                        throw new Exception("Failed to add movie.");
+                        throw new Exception("Invalid data.");
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
                     }
                 }
             }
@@ -127,13 +153,24 @@ namespace MovieCRUD.Models.Repositories
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
-                connection.Open();
                 using (NpgsqlCommand cmd = new())
                 {
-                    cmd.Connection = connection;
-                    cmd.CommandText = "DELETE FROM movies WHERE id = @movieId";
-                    cmd.Parameters.AddWithValue("movieId", movieId);
-                    cmd.ExecuteNonQuery();
+                    try
+                    {
+                        connection.Open();
+                        cmd.Connection = connection;
+                        cmd.CommandText = "DELETE FROM movies WHERE id = @movieId";
+                        cmd.Parameters.AddWithValue("movieId", movieId);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
                 }
             }
         }
@@ -141,18 +178,35 @@ namespace MovieCRUD.Models.Repositories
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
-                conn.Open();
 
                 using (NpgsqlCommand cmd = new())
                 {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "UPDATE movies SET title = @title, date_of_release = @date_of_release, genre = @genre WHERE id = @id";
-                    cmd.Parameters.AddWithValue("title", movieToUpdate.Title);
-                    cmd.Parameters.AddWithValue("date_of_release", movieToUpdate.DateOfRelease);
-                    cmd.Parameters.AddWithValue("genre", movieToUpdate.MovieGenre.ToString());
-                    cmd.Parameters.AddWithValue("id", movieToUpdate.Id);
+                    try
+                    {
+                        conn.Open();
 
-                    cmd.ExecuteNonQuery();
+                        cmd.Connection = conn;
+                        cmd.CommandText = "UPDATE movies SET title = @title, date_of_release = @date_of_release, genre = @genre WHERE id = @id";
+                        cmd.Parameters.AddWithValue("title", movieToUpdate.Title);
+                        cmd.Parameters.AddWithValue("date_of_release", movieToUpdate.DateOfRelease);
+                        cmd.Parameters.AddWithValue("genre", movieToUpdate.MovieGenre.ToString());
+                        cmd.Parameters.AddWithValue("id", movieToUpdate.Id);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new Exception("Invalid data.");
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+
                 }
             }
         }
@@ -160,13 +214,25 @@ namespace MovieCRUD.Models.Repositories
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
-                connection.Open();
                 using (NpgsqlCommand command = new())
                 {
-                    command.Connection = connection;
-                    command.CommandText = "DELETE FROM directors WHERE id = @directorId";
-                    command.Parameters.AddWithValue("directorId", directorId);
-                    command.ExecuteNonQuery();
+                    try
+                    {
+                        connection.Open();
+                        command.Connection = connection;
+                        command.CommandText = "DELETE FROM directors WHERE id = @directorId";
+                        command.Parameters.AddWithValue("directorId", directorId);
+                        command.ExecuteNonQuery();
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+
                 }
             }
         }
@@ -174,18 +240,32 @@ namespace MovieCRUD.Models.Repositories
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
-                conn.Open();
-
                 using (NpgsqlCommand cmd = new())
                 {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "UPDATE directors SET name = @name, year_of_birth = @yearOfBirth, nationality = @nationality WHERE id = @id";
-                    cmd.Parameters.AddWithValue("name", directorToUpdate.Name);
-                    cmd.Parameters.AddWithValue("yearOfBirth", directorToUpdate.YearOfBirth);
-                    cmd.Parameters.AddWithValue("nationality", directorToUpdate.Nationality);
-                    cmd.Parameters.AddWithValue("id", directorToUpdate.Id);
+                    try
+                    {
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandText = "UPDATE directors SET name = @name, year_of_birth = @yearOfBirth, nationality = @nationality WHERE id = @id";
+                        cmd.Parameters.AddWithValue("name", directorToUpdate.Name);
+                        cmd.Parameters.AddWithValue("yearOfBirth", directorToUpdate.YearOfBirth);
+                        cmd.Parameters.AddWithValue("nationality", directorToUpdate.Nationality);
+                        cmd.Parameters.AddWithValue("id", directorToUpdate.Id);
 
-                    cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new Exception("Invalid data.");
+                    }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
                 }
             }
         }
@@ -195,34 +275,44 @@ namespace MovieCRUD.Models.Repositories
 
             using (NpgsqlConnection connection = new(connectionString))
             {
-                connection.Open();
                 using (NpgsqlCommand command = new())
                 {
-                    command.Connection = connection;
-                    command.CommandText = "SELECT id, title, date_of_release, genre, director_id FROM movies WHERE director_id = @directorId";
-                    command.Parameters.AddWithValue("directorId", directorId);
-
-                    using (var reader = command.ExecuteReader())
+                    try
                     {
-                        while (reader.Read())
+                        connection.Open();
+                        command.Connection = connection;
+                        command.CommandText = "SELECT id, title, date_of_release, genre, director_id FROM movies WHERE director_id = @directorId";
+                        command.Parameters.AddWithValue("directorId", directorId);
+
+                        using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
-                            var movie = new Movie
+                            while (reader.Read())
                             {
-                                Id = reader.GetInt32(0),
-                                Title = reader.GetString(1),
-                                DateOfRelease = reader.GetDateTime(2),
-                                MovieGenre = ParseGenre(reader.GetString(3)),
-                                DirectorId = reader.GetInt32(4)
-                            };
-                            movies.Add(movie);
+                                var movie = new Movie
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Title = reader.GetString(1),
+                                    DateOfRelease = reader.GetDateTime(2),
+                                    MovieGenre = ParseGenre(reader.GetString(3)),
+                                    DirectorId = reader.GetInt32(4)
+                                };
+                                movies.Add(movie);
+                            }
                         }
+                        return movies;
                     }
+                    catch (NpgsqlException)
+                    {
+                        throw new Exception("An error occurred while accessing the database.");
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+
                 }
             }
 
-            return movies;
         }
-        
-
     }
 }
