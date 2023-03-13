@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MovieCRUD.Models.Repositories
+namespace MovieCRUD.Models.DbContext
 {
     public abstract class IDbContext
     {

@@ -82,5 +82,17 @@ namespace MovieCRUD.Models
             YearOfBirth = otherDirector.YearOfBirth;
             Nationality = otherDirector.Nationality;
         }
+
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(Name) || Name.Length < 3)
+                throw new ArgumentException("Name must be at least 3 characters long.");
+
+            if (YearOfBirth <= 0 || YearOfBirth > DateTime.Now.Year)
+                throw new ArgumentException("Year of birth must be a positive integer between 1 and the current year.");
+
+            if (string.IsNullOrWhiteSpace(Nationality) || Nationality.Length < 3)
+                throw new ArgumentException("Nationality must be at least 3 characters long.");
+        }
     }
 }

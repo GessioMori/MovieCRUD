@@ -9,7 +9,7 @@ using System.IO;
 using MovieCRUD.Models.Enums;
 using System.Windows;
 
-namespace MovieCRUD.Models.Repositories
+namespace MovieCRUD.Models.DbContext
 {
     internal class PgContext : IDbContext
     {
@@ -17,7 +17,6 @@ namespace MovieCRUD.Models.Repositories
         public PgContext()
         {
         }
-
         public override List<Director> GetDirectors()
         {
             using (NpgsqlConnection connection = new(connectionString))

@@ -1,4 +1,5 @@
-﻿using MovieCRUD.Models.Repositories;
+﻿using MovieCRUD.Models;
+using MovieCRUD.Models.DbContext;
 using MovieCRUD.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,16 @@ namespace MovieCRUD.Views
     {
         public MainView()
         {
-            PgContext pgContext = new();
-            DataContext = new MainViewModel(pgContext);
-            InitializeComponent();
+            try
+            {
+                PgContext pgContext = new();
+                DataContext = new MainViewModel(pgContext);
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
     public class NullToBoolConverter : IValueConverter

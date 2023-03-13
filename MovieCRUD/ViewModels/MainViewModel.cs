@@ -1,5 +1,5 @@
 ﻿using MovieCRUD.Models;
-using MovieCRUD.Models.Repositories;
+using MovieCRUD.Models.DbContext;
 using MovieCRUD.ViewModels.ViewModelUtils;
 using MovieCRUD.Views.Windows;
 using System;
@@ -17,7 +17,7 @@ namespace MovieCRUD.ViewModels
     internal class MainViewModel : BaseNotifier
 
     {
-        private IDbContext DbContext { get; set; }
+        private readonly IDbContext DbContext;
         public ObservableCollection<Director> Directors { get; }
 
         private Director? _selectedDirector;
@@ -39,8 +39,15 @@ namespace MovieCRUD.ViewModels
                 _selectedDirector = value;
                 if (value != null)
                 {
-                    List<Movie> movies = DbContext.GetMoviesByDirector(value.Id);
-                    _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
+                    try
+                    {
+                        List<Movie> movies = DbContext.GetMoviesByDirector(value.Id);
+                        _selectedDirector.Movies = new ObservableCollection<Movie>(movies);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 OnPropertyChanged(nameof(SelectedDirector));
             }
@@ -93,6 +100,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
+                            newDirector.Validate();
                             Director dbAddedDirector = DbContext.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
                             Directors.Add(dbAddedDirector);
                             SelectedDirector = dbAddedDirector;
@@ -104,7 +112,6 @@ namespace MovieCRUD.ViewModels
 
                     }
                 });
-
             UpdateDirector = new RelayCommand(
                 (object _) =>
                 {
@@ -121,6 +128,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
+                            directorToUpdate.Validate();
                             SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
                             DbContext.UpdateDirector(SelectedDirector);
                         }
@@ -173,6 +181,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
+                            newMovie.Validate();
                             Movie dbAddedMovie = DbContext.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
                             SelectedDirector.Movies.Add(dbAddedMovie);
                             SelectedMovie = dbAddedMovie;
@@ -181,7 +190,6 @@ namespace MovieCRUD.ViewModels
                         {
                             MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
-
                     }
                 },
                 (object _) =>
@@ -204,6 +212,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
+                            movieToUpdate.Validate();
                             SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
                             DbContext.UpdateMovie(SelectedMovie);
                         }
