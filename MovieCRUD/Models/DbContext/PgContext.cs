@@ -287,12 +287,13 @@ namespace MovieCRUD.Models.DbContext
                         {
                             while (reader.Read())
                             {
-                                var movie = new Movie
+                                _ = Enum.TryParse<Genre>(reader.GetString(3), out Genre movieGenre);
+                                Movie movie = new()
                                 {
                                     Id = reader.GetInt32(0),
                                     Title = reader.GetString(1),
                                     DateOfRelease = reader.GetDateTime(2),
-                                    MovieGenre = ParseGenre(reader.GetString(3)),
+                                    MovieGenre = movieGenre,
                                     DirectorId = reader.GetInt32(4)
                                 };
                                 movies.Add(movie);

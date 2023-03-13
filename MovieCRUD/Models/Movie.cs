@@ -76,29 +76,7 @@ namespace MovieCRUD.Models
             Title = otherMovie.Title;
             DateOfRelease = otherMovie.DateOfRelease;
             MovieGenre = otherMovie.MovieGenre;
-        }
-
-        public void Validate()
-        {
-            if (string.IsNullOrWhiteSpace(Title))
-            {
-                throw new ArgumentException("Title is required");
-            }
-
-            if (!Enum.IsDefined(typeof(Genre), MovieGenre))
-            {
-                throw new ArgumentException("Invalid genre");
-            }
-
-            if (DirectorId <= 0)
-            {
-                throw new ArgumentException("Director ID must be greater than zero");
-            }
-
-            if (DateOfRelease < new DateTime(1900, 1, 1) || DateOfRelease > DateTime.Now)
-            {
-                throw new ArgumentException("Release date must be between 1900 and the current date");
-            }
+            DirectorId = otherMovie.DirectorId;
         }
     }
 }

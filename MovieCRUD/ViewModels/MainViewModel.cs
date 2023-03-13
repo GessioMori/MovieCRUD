@@ -19,6 +19,7 @@ namespace MovieCRUD.ViewModels
     {
         private readonly IDbContext DbContext;
         private readonly IDirectorValidator directorValidator;
+        private readonly IMovieValidator movieValidator;
         public ObservableCollection<Director> Directors { get; }
 
         private Director? _selectedDirector;
@@ -72,6 +73,7 @@ namespace MovieCRUD.ViewModels
             {
                 Directors = new ObservableCollection<Director>(DbContext.GetDirectors());
                 directorValidator = new DirectorValidator();
+                movieValidator = new MovieValidator();
             }
             catch (Exception ex)
             {
@@ -183,7 +185,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
-                            newMovie.Validate();
+                            movieValidator.Validate(newMovie);
                             Movie dbAddedMovie = DbContext.AddMovie(newMovie);
                             SelectedDirector.Movies.Add(dbAddedMovie);
                             SelectedMovie = dbAddedMovie;
@@ -214,7 +216,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
-                            movieToUpdate.Validate();
+                            movieValidator.Validate(movieToUpdate);
                             SelectedMovie.CopyFromAnotherMovie(movieToUpdate);
                             DbContext.UpdateMovie(SelectedMovie);
                         }
