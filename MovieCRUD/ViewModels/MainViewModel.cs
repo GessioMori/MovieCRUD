@@ -18,6 +18,7 @@ namespace MovieCRUD.ViewModels
 
     {
         private readonly IDbContext DbContext;
+        private readonly IDirectorValidator directorValidator;
         public ObservableCollection<Director> Directors { get; }
 
         private Director? _selectedDirector;
@@ -70,6 +71,7 @@ namespace MovieCRUD.ViewModels
             try
             {
                 Directors = new ObservableCollection<Director>(DbContext.GetDirectors());
+                directorValidator = new DirectorValidator();
             }
             catch (Exception ex)
             {
@@ -100,8 +102,8 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
-                            newDirector.Validate();
-                            Director dbAddedDirector = DbContext.AddDirector(newDirector.Name, newDirector.YearOfBirth, newDirector.Nationality);
+                            directorValidator.Validate(newDirector);
+                            Director dbAddedDirector = DbContext.AddDirector(newDirector);
                             Directors.Add(dbAddedDirector);
                             SelectedDirector = dbAddedDirector;
                         }
@@ -128,7 +130,7 @@ namespace MovieCRUD.ViewModels
                     {
                         try
                         {
-                            directorToUpdate.Validate();
+                            directorValidator.Validate(directorToUpdate);
                             SelectedDirector.CopyFromAnotherDirector(directorToUpdate);
                             DbContext.UpdateDirector(SelectedDirector);
                         }
@@ -182,7 +184,7 @@ namespace MovieCRUD.ViewModels
                         try
                         {
                             newMovie.Validate();
-                            Movie dbAddedMovie = DbContext.AddMovie(SelectedDirector.Id, newMovie.Title, newMovie.DateOfRelease, newMovie.MovieGenre);
+                            Movie dbAddedMovie = DbContext.AddMovie(newMovie);
                             SelectedDirector.Movies.Add(dbAddedMovie);
                             SelectedMovie = dbAddedMovie;
                         }

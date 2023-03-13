@@ -62,7 +62,7 @@ namespace MovieCRUD.Models.DbContext
             };
 
         }
-        public override Director AddDirector(string name, int yearOfBirth, string nationality)
+        public override Director AddDirector(Director newDirector)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -73,9 +73,9 @@ namespace MovieCRUD.Models.DbContext
                         connection.Open();
                         cmd.Connection = connection;
                         cmd.CommandText = "INSERT INTO directors (name, year_of_birth, nationality) VALUES (@name, @yearOfBirth, @nationality) RETURNING id";
-                        cmd.Parameters.AddWithValue("name", name);
-                        cmd.Parameters.AddWithValue("yearOfBirth", yearOfBirth);
-                        cmd.Parameters.AddWithValue("nationality", nationality);
+                        cmd.Parameters.AddWithValue("name", newDirector.Name);
+                        cmd.Parameters.AddWithValue("yearOfBirth", newDirector.YearOfBirth);
+                        cmd.Parameters.AddWithValue("nationality", newDirector.Nationality);
 
                         object? result = cmd.ExecuteScalar();
 
@@ -84,9 +84,9 @@ namespace MovieCRUD.Models.DbContext
                         return new Director
                         {
                             Id = newDirectorId,
-                            Name = name,
-                            YearOfBirth = yearOfBirth,
-                            Nationality = nationality
+                            Name = newDirector.Name,
+                            YearOfBirth = newDirector.YearOfBirth,
+                            Nationality = newDirector.Nationality
                         };
                     }
                     catch (InvalidOperationException)
@@ -104,7 +104,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override Movie AddMovie(int directorId, string title, DateTime releaseDate, Genre genre)
+        public override Movie AddMovie(Movie newMovie)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -115,10 +115,10 @@ namespace MovieCRUD.Models.DbContext
                         conn.Open();
                         cmd.Connection = conn;
                         cmd.CommandText = "INSERT INTO movies (title, date_of_release, genre, director_id) VALUES (@title, @releaseDate, @genre, @directorId) RETURNING id";
-                        cmd.Parameters.AddWithValue("title", title);
-                        cmd.Parameters.AddWithValue("releaseDate", releaseDate);
-                        cmd.Parameters.AddWithValue("genre", genre.ToString());
-                        cmd.Parameters.AddWithValue("directorId", directorId);
+                        cmd.Parameters.AddWithValue("title", newMovie.Title);
+                        cmd.Parameters.AddWithValue("releaseDate", newMovie.DateOfRelease);
+                        cmd.Parameters.AddWithValue("genre", newMovie.MovieGenre.ToString());
+                        cmd.Parameters.AddWithValue("directorId", newMovie.DirectorId);
 
                         object? result = cmd.ExecuteScalar();
 
@@ -127,10 +127,10 @@ namespace MovieCRUD.Models.DbContext
                         return new Movie
                         {
                             Id = newMovieId,
-                            DateOfRelease = releaseDate,
-                            DirectorId = directorId,
-                            MovieGenre = genre,
-                            Title = title
+                            DateOfRelease = newMovie.DateOfRelease,
+                            DirectorId = newMovie.DirectorId,
+                            MovieGenre = newMovie.MovieGenre,
+                            Title = newMovie.Title
                         };
                     }
                     catch (InvalidOperationException)
