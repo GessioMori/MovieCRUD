@@ -1,13 +1,8 @@
-﻿using System;
+﻿using MovieCRUD.Models.Enums;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
-using Npgsql;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using MovieCRUD.Models.Enums;
-using System.Windows;
 
 namespace MovieCRUD.Models.DbContext
 {
@@ -17,7 +12,7 @@ namespace MovieCRUD.Models.DbContext
         public PgContext()
         {
         }
-        public override List<Director> GetDirectors()
+        public List<Director> GetDirectors()
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -62,7 +57,7 @@ namespace MovieCRUD.Models.DbContext
             };
 
         }
-        public override Director AddDirector(Director newDirector)
+        public Director AddDirector(Director newDirector)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -104,7 +99,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override Movie AddMovie(Movie newMovie)
+        public Movie AddMovie(Movie newMovie)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -148,7 +143,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override void DeleteMovie(int movieId)
+        public void DeleteMovie(int movieId)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -173,7 +168,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override void UpdateMovie(Movie movieToUpdate)
+        public void UpdateMovie(Movie movieToUpdate)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -209,7 +204,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override void DeleteDirector(int directorId)
+        public void DeleteDirector(int directorId)
         {
             using (NpgsqlConnection connection = new(connectionString))
             {
@@ -235,7 +230,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override void UpdateDirector(Director directorToUpdate)
+        public void UpdateDirector(Director directorToUpdate)
         {
             using (NpgsqlConnection conn = new(connectionString))
             {
@@ -268,7 +263,7 @@ namespace MovieCRUD.Models.DbContext
                 }
             }
         }
-        public override List<Movie> GetMoviesByDirector(int directorId)
+        public List<Movie> GetMoviesByDirector(int directorId)
         {
             var movies = new List<Movie>();
 

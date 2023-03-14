@@ -5,16 +5,13 @@ using MovieCRUD.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
 namespace MovieCRUD.ViewModels
 {
-    internal class MainViewModel : BaseNotifier
+    public class MainViewModel : BaseNotifier
 
     {
         private readonly IDbContext DbContext;
@@ -25,12 +22,12 @@ namespace MovieCRUD.ViewModels
         private Director? _selectedDirector;
 
         private Movie? _selectedMovie;
-        public ICommand DeleteDirector { get; private set; }
-        public ICommand AddDirector { get; private set; }
-        public ICommand UpdateDirector { get; private set; }
-        public ICommand AddMovie { get; private set; }
-        public ICommand UpdateMovie { get; private set; }
-        public ICommand DeleteMovie { get; private set; }
+        public ICommand? DeleteDirector { get; private set; }
+        public ICommand? AddDirector { get; private set; }
+        public ICommand? UpdateDirector { get; private set; }
+        public ICommand? AddMovie { get; private set; }
+        public ICommand? UpdateMovie { get; private set; }
+        public ICommand? DeleteMovie { get; private set; }
 
 
         public Director? SelectedDirector
@@ -83,7 +80,7 @@ namespace MovieCRUD.ViewModels
             StartCommands();
         }
 
-        private void StartCommands()
+        public void StartCommands()
         {
             AddDirector = new RelayCommand(
                 (object _) =>

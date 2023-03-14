@@ -1,11 +1,6 @@
 ﻿using MovieCRUD.Models.Enums;
 using MovieCRUD.ViewModels.ViewModelUtils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MovieCRUD.Models
 {
@@ -16,7 +11,7 @@ namespace MovieCRUD.Models
         private DateTime _dateOfRelease;
         private int _directorId;
         private Genre _genre;
-        
+
         public int Id
         {
             get

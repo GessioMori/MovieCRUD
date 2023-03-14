@@ -1,22 +1,16 @@
-﻿using MovieCRUD.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MovieCRUD.Models.DbContext
 {
-    public abstract class IDbContext
+    public interface IDbContext
     {
-        private readonly string connectionString;
-        public abstract List<Director> GetDirectors();
-        public abstract Director AddDirector(Director newDirector);
-        public abstract void DeleteDirector(int directorId);
-        public abstract void UpdateDirector(Director directorToUpdate);
-        public abstract List<Movie> GetMoviesByDirector(int directorId);
-        public abstract Movie AddMovie(Movie newMovie);
-        public abstract void DeleteMovie(int movieId);
-        public abstract void UpdateMovie(Movie movieToUpdate);
+        List<Director> GetDirectors();
+        Director AddDirector(Director newDirector);
+        void DeleteDirector(int directorId);
+        void UpdateDirector(Director directorToUpdate);
+        List<Movie> GetMoviesByDirector(int directorId);
+        Movie AddMovie(Movie newMovie);
+        void DeleteMovie(int movieId);
+        void UpdateMovie(Movie movieToUpdate);
     }
 }
