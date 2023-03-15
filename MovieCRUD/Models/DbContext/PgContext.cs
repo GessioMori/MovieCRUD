@@ -6,11 +6,19 @@ using System.Configuration;
 
 namespace MovieCRUD.Models.DbContext
 {
-    internal class PgContext : IDbContext
+    public class PgContext : IDbContext
     {
-        private readonly string connectionString = ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString;
-        public PgContext()
+        private readonly string connectionString;
+        public PgContext(bool isTestMode = false)
         {
+            if (isTestMode)
+            {
+                connectionString = "Server=localhost;Port=5432;Database=moviecrudtest;User Id=postgres;Password=postgrespw;Integrated Security=true;";
+            }
+            else
+            {
+                connectionString = "Server=localhost;Port=5432;Database=moviecrud;User Id=postgres;Password=postgrespw;Integrated Security=true;";
+            }
         }
         public List<Director> GetDirectors()
         {
@@ -265,7 +273,7 @@ namespace MovieCRUD.Models.DbContext
         }
         public List<Movie> GetMoviesByDirector(int directorId)
         {
-            var movies = new List<Movie>();
+            List<Movie> movies = new();
 
             using (NpgsqlConnection connection = new(connectionString))
             {

@@ -24,7 +24,7 @@ namespace MovieCRUD.Tests
         public void Validate_ValidMovie_NoExceptionThrown()
         {
             // Arrange
-            var movie = new Movie()
+            Movie movie = new()
             {
                 Title = "The Godfather",
                 MovieGenre = Genre.Drama,
@@ -43,7 +43,7 @@ namespace MovieCRUD.Tests
         public void Validate_NullTitle_ThrowsArgumentException()
         {
             // Arrange
-            var movie = new Movie()
+            Movie movie = new()
             {
                 Title = null,
                 MovieGenre = Genre.Drama,
@@ -62,7 +62,7 @@ namespace MovieCRUD.Tests
         public void Validate_InvalidGenre_ThrowsArgumentException()
         {
             // Arrange
-            var movie = new Movie()
+            Movie movie = new()
             {
                 Title = "The Godfather",
                 MovieGenre = (Genre)10, // invalid genre
@@ -81,7 +81,7 @@ namespace MovieCRUD.Tests
         public void Validate_InvalidDirectorId_ThrowsArgumentException()
         {
             // Arrange
-            var movie = new Movie()
+            Movie movie = new()
             {
                 Title = "The Godfather",
                 MovieGenre = Genre.Drama,
@@ -100,7 +100,7 @@ namespace MovieCRUD.Tests
         public void Validate_InvalidReleaseDate_ThrowsArgumentException()
         {
             // Arrange
-            var movie = new Movie()
+            Movie movie = new()
             {
                 Title = "The Godfather",
                 MovieGenre = Genre.Drama,

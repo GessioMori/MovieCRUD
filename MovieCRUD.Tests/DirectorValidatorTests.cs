@@ -23,7 +23,7 @@ namespace MovieCRUD.Tests
         public void Validate_NameIsNull_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = null,
                 YearOfBirth = 1980,
@@ -41,7 +41,7 @@ namespace MovieCRUD.Tests
         public void Validate_NameIsLessThanThreeCharacters_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "Jo",
                 YearOfBirth = 1980,
@@ -59,7 +59,7 @@ namespace MovieCRUD.Tests
         public void Validate_YearOfBirthIsZero_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "John Smith",
                 YearOfBirth = 0,
@@ -77,7 +77,7 @@ namespace MovieCRUD.Tests
         public void Validate_YearOfBirthIsGreaterThanCurrentYear_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "John Smith",
                 YearOfBirth = DateTime.Now.Year + 1,
@@ -95,7 +95,7 @@ namespace MovieCRUD.Tests
         public void Validate_NationalityIsNull_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "John Smith",
                 YearOfBirth = 1980,
@@ -113,7 +113,7 @@ namespace MovieCRUD.Tests
         public void Validate_NationalityIsLessThanThreeCharacters_ThrowsArgumentException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "John Smith",
                 YearOfBirth = 1980,
@@ -131,7 +131,7 @@ namespace MovieCRUD.Tests
         public void Validate_DirectorIsValid_DoesNotThrowException()
         {
             // Arrange
-            var director = new Director
+            Director director = new Director
             {
                 Name = "John Smith",
                 YearOfBirth = 1980,
